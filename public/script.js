@@ -46,10 +46,10 @@ const myVideo = document.createElement('video');
 myVideo.setAttribute('id', 'small');
 myVideo.muted = true;
 
-var getUserMedia =
-    navigator.mediaDevices.getUserMedia ||
-    navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia;
+// var getUserMedia =
+//     navigator.mediaDevices.getUserMedia ||
+//     navigator.webkitGetUserMedia ||
+//     navigator.mozGetUserMedia;
 
 //Access user's camara and microphone
 navigator.mediaDevices.getUserMedia({
@@ -115,10 +115,10 @@ myPeer.on("call", function (call) {
             call.answer(myStream); // Answer the call with an A/V stream.
 
             call.on("stream", function (guestStream) {
-                guestVideo.srcObject = guestStream;
+                guestVideo.srcObject = guestStream; 
                 guestVideo.addEventListener('loadedmetadata', () => {
                     guestVideo.play();
-                })
+                }) 
                 bigPri.appendChild(guestVideo);
             });
         },
