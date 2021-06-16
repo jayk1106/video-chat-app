@@ -8,7 +8,7 @@ const myPeer = new Peer(undefined, {
 
 
 myPeer.on('open', userId => {
-    socket.emit('join-room', ROOM_ID, userId , USER_NAME);
+    socket.emit('join-room', ROOM_ID, userId, USER_NAME);
 })
 
 const bigPri = document.getElementById('bigPri');
@@ -25,11 +25,11 @@ const guestVideo = document.createElement("video");
 const roomurl = document.getElementById('roomurl');
 roomurl.innerHTML = `<span class='urlbox'>${window.location.href}</span>`;
 
-function openInviteBox(){
+function openInviteBox() {
     const inviteBox = document.getElementById('inviteBox');
     inviteBox.style.display = 'flex';
 }
-function closeInviteBox(){
+function closeInviteBox() {
     const inviteBox = document.getElementById('inviteBox');
     inviteBox.style.display = 'none';
 }
@@ -67,9 +67,9 @@ navigator.mediaDevices.getUserMedia({
     smallPri.appendChild(myVideo);
 
     // When guest connected
-    socket.on('guest-connected', (userId , userName) => {
+    socket.on('guest-connected', (userId, userName) => {
         guestConnectedMessage(userName);
-        socket.emit('recivedcall' , USER_NAME);
+        socket.emit('recivedcall', USER_NAME);
         // Call guest when he connected
         var call = myPeer.call(userId, myStream);
         console.log("outgoing call", call);
@@ -95,36 +95,36 @@ navigator.mediaDevices.getUserMedia({
 })
 
 
-socket.on('user-disconnect', (userId , name) => {
+socket.on('user-disconnect', (userId, name) => {
     if (allUsers[userId]) allUsers[userId].close();
     guestVideo.remove();
     userLeaveMessage(name);
 })
 
-socket.on('guestJoindMessage' , name =>{
+socket.on('guestJoindMessage', name => {
     guestConnectedMessage(name);
 })
 
 let callStream;
 myPeer.on("call", function (call) {
-    console.log("incomming call outside" , call);
+    console.log("incomming call outside", call);
     getUserMedia(
-      { video: true, audio: true },
-      function (myStream) {
-        callStream  = myStream;
-        call.answer(myStream); // Answer the call with an A/V stream.
+        { video: true, audio: true },
+        function (myStream) {
+            callStream = myStream;
+            call.answer(myStream); // Answer the call with an A/V stream.
 
-        call.on("stream", function (guestStream) {
-            guestVideo.srcObject = guestStream;
-            guestVideo.addEventListener('loadedmetadata' , () => {
-                guestVideo.play();
-            })
-            bigPri.appendChild(guestVideo);
-        });
-      },
-      function (err) {
-        console.log("Failed to get local stream", err);
-      }
+            call.on("stream", function (guestStream) {
+                guestVideo.srcObject = guestStream;
+                guestVideo.addEventListener('loadedmetadata', () => {
+                    guestVideo.play();
+                })
+                bigPri.appendChild(guestVideo);
+            });
+        },
+        function (err) {
+            console.log("Failed to get local stream", err);
+        }
     );
 });
 
@@ -140,16 +140,18 @@ function leaveMeetting() {
 }
 
 function playStopVideo() {
-    let enabled = localStream.getVideoTracks()[0].enabled;
-    const playstopvideo = document.getElementById('playstopvideo');
-    if (enabled) {
-        localStream.getVideoTracks()[0].enabled = false;
-        setPlayVideo(playstopvideo);
-    } else {
-        setStopVideo(playstopvideo);
-        localStream.getVideoTracks()[0].enabled = true;
+    if (localStream) {
+        let enabled = localStream.getVideoTracks()[0].enabled;
+        const playstopvideo = document.getElementById('playstopvideo');
+        if (enabled) {
+            localStream.getVideoTracks()[0].enabled = false;
+            setPlayVideo(playstopvideo);
+        } else {
+            setStopVideo(playstopvideo);
+            localStream.getVideoTracks()[0].enabled = true;
+        }
     }
-    if(callStream){
+    if (callStream) {
         let enabled2 = callStream.getVideoTracks()[0].enabled;
         if (enabled2) {
             callStream.getVideoTracks()[0].enabled = false;
@@ -163,16 +165,19 @@ function playStopVideo() {
 }
 
 function muteUnmute() {
-    const enabled = localStream.getAudioTracks()[0].enabled;
-    const muteunmute = document.getElementById('muteunmute');
-    if (enabled) {
-        localStream.getAudioTracks()[0].enabled = false;
-        setUnmuteButton(muteunmute);
-    } else {
-        setMuteButton(muteunmute);
-        localStream.getAudioTracks()[0].enabled = true;
+    if (localStream) {
+        const enabled = localStream.getAudioTracks()[0].enabled;
+        const muteunmute = document.getElementById('muteunmute');
+        if (enabled) {
+            localStream.getAudioTracks()[0].enabled = false;
+            setUnmuteButton(muteunmute);
+        } else {
+            setMuteButton(muteunmute);
+            localStream.getAudioTracks()[0].enabled = true;
+        }
     }
-    if(callStream){
+
+    if (callStream) {
         let enabled2 = callStream.getAudioTracks()[0].enabled;
         if (enabled2) {
             callStream.getAudioTracks()[0].enabled = false;
@@ -208,12 +213,12 @@ function sendMessage() {
     const message = messageValue.value;
     if (message) {
         appendMessage(message);
-        socket.emit('sendMessage', message , USER_NAME);
+        socket.emit('sendMessage', message, USER_NAME);
         messageValue.value = "";
     }
 }
 
-socket.on('reciveMessage', (msg , name) => {
+socket.on('reciveMessage', (msg, name) => {
     const yourMsg = `<div class="guest__message">${name}: ${msg}</div>`;
     msgBox.insertAdjacentHTML('beforeend', yourMsg);
 })
@@ -224,14 +229,14 @@ function appendMessage(msg) {
     msgBox.insertAdjacentHTML('beforeend', yourMsg);
 }
 
-function guestConnectedMessage(name){
+function guestConnectedMessage(name) {
     const yourMsg = `<div class="your__message">${name} Join</div>`;
     msgBox.insertAdjacentHTML('beforeend', yourMsg);
     const addNewUser = document.getElementById('addNewUser');
     addNewUser.style.display = 'none';
 }
 
-function userLeaveMessage(name){
+function userLeaveMessage(name) {
     const yourMsg = `<div class="your__message">${name} Leaved</div>`;
     msgBox.insertAdjacentHTML('beforeend', yourMsg);
     const addNewUser = document.getElementById('addNewUser');
