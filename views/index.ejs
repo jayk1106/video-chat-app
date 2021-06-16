@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.3.1/peerjs.min.js.map" defer></script>
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="script.js" defer></script>
+    <script>
+        const ROOM_ID = '<%= roomId %>';
+        const PORT = '<%= portNumber %>'
+        const USER_NAME = prompt('Enter Your Name');
+        if (!USER_NAME) {
+            alert(`Enter Name`);
+            location.reload();
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="addNewBox" id="inviteBox" style="display: none;">
+            <div class="box">
+                <h1>Invite Your Friend</h1>
+                <div>
+                    <h2>Step 1:</h2>
+                    <p>Copy this ROOM URL</p>
+                    <p id="roomurl"></p>
+                </div>
+                <div>
+                    <h2>Step 2:</h2>
+                    <p>Send this URL to other person</p>
+                </div>
+
+
+                <button type="button" class="closeBtn" onclick="closeInviteBox()">x</button>
+
+            </div>
+        </div>
+        <div class="videochat">
+            <div class="videoscreens">
+
+                <div class="bigscreen" id="bigPri">
+
+                </div>
+                <div class="smallscreen" id="smallPri">
+
+                </div>
+
+            </div>
+            <div class="bottomline">
+                <div class="controls">
+                    <div class="control__block" onclick="muteUnmute()" id="muteunmute">
+                        <i class="fas fa-microphone"></i>
+                        <!-- <i class="fas fa-microphone-slash" id="unmute"></i> -->
+                    </div>
+                    <div class="control__block" onclick="playStopVideo()" id="playstopvideo">
+                        <i class="fas fa-video"></i>
+                        <!-- <i class="fas fa-video-slash" id="stop"></i> -->
+                    </div>
+                    <div class="control__block" id="addNewUser" onclick="openInviteBox()">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="control__block" style="background-color: rgb(204, 34, 34);" onclick="leaveMeetting()">
+                        <i class="fas fa-phone-slash"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat">
+            <div class="heading">
+                <span>CHAT BOX</span>
+            </div>
+            <div class="messages" id="chatmessagebox">
+
+            </div>
+            <div class="typeMessage">
+                <input type="text" id="messageValue" placeholder="Start Typing...">
+                <button type="button" id="sendBtn" onclick="sendMessage()">SEND</button>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
