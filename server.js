@@ -29,7 +29,7 @@ app.get('/thankyou' , (req, res, next) => {
 })
 
 app.get('/:roomId', (req, res, next) => {
-    res.render('index', { roomId: req.params.roomId , portNumber : port});
+    res.render('index', { roomId: req.params.roomId });
 })
 
 const allRoom = new Object();
