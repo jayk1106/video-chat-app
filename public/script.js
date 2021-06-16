@@ -47,7 +47,7 @@ myVideo.setAttribute('id', 'small');
 myVideo.muted = true;
 
 var getUserMedia =
-    navigator.getUserMedia ||
+    navigator.mediaDevices.getUserMedia ||
     navigator.webkitGetUserMedia ||
     navigator.mozGetUserMedia;
 
@@ -108,7 +108,7 @@ socket.on('guestJoindMessage', name => {
 let callStream;
 myPeer.on("call", function (call) {
     console.log("incomming call outside", call);
-    getUserMedia(
+    navigator.mediaDevices.getUserMedia(
         { video: true, audio: true },
         function (myStream) {
             callStream = myStream;
