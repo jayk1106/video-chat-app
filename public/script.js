@@ -1,9 +1,15 @@
 const socket = io('/');
+let port;
+console.log(window.location.hostname);
+if(window.location.hostname == 'localhost') 
+    port='8080';
+else    
+    port = '443';
 
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443',
+    port: port,
 })
 
 
