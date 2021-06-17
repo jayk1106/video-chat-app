@@ -138,7 +138,7 @@ myPeer.on('call', call => {
     console.log("second" + localStream);
     if (localStream) {
         console.log("localstream works");
-        call.answer(myStream); // Answer the call with an A/V stream.
+        call.answer(localStream); // Answer the call with an A/V stream.
 
         call.on("stream", function (guestStream) {
             console.log("Incomming calls rosponse" ,guestStream);
