@@ -3,7 +3,7 @@ const socket = io('/');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443',
+    port: '8080',
 })
 
 
@@ -39,17 +39,19 @@ function closeInviteBox() {
 
 
 const allUsers = {};
+
 let localStream;
+let callStream;
 
 // Create video element for user
 const myVideo = document.createElement('video');
 myVideo.setAttribute('id', 'small');
 myVideo.muted = true;
 
-// var getUserMedia =
-//     navigator.mediaDevices.getUserMedia ||
-//     navigator.webkitGetUserMedia ||
-//     navigator.mozGetUserMedia;
+var getUserMedia =
+    navigator.getUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia;
 
 //Access user's camara and microphone
 navigator.mediaDevices.getUserMedia({
@@ -59,6 +61,7 @@ navigator.mediaDevices.getUserMedia({
 
     localStream = myStream;
     // To append stream to screen
+    console.log("localstream builded " + localStream);
     myVideo.srcObject = myStream;
     myVideo.addEventListener('loadedmetadata', () => {
         myVideo.play();
@@ -85,13 +88,14 @@ navigator.mediaDevices.getUserMedia({
             bigPri.appendChild(guestVideo);
 
         })
-
         call.on('close', () => {
             guestVideo.remove();
         })
 
         allUsers[userId] = call;
     })
+
+
 })
 
 
@@ -105,28 +109,65 @@ socket.on('guestJoindMessage', name => {
     guestConnectedMessage(name);
 })
 
-let callStream;
-myPeer.on("call", function (call) {
-    console.log("incomming call outside", call);
-    navigator.mediaDevices.getUserMedia(
-        { video: true, audio: true },
-        function (myStream) {
-            callStream = myStream;
-            call.answer(myStream); // Answer the call with an A/V stream.
+// let callStream;
+// myPeer.on("call", function (call) {
+//     console.log("incomming call outside" , call);
+//     getUserMedia(
+//       { video: true, audio: true },
+//       function (myStream) {
+//         callStream  = myStream;
+//         call.answer(myStream); // Answer the call with an A/V stream.
 
-            call.on("stream", function (guestStream) {
-                guestVideo.srcObject = guestStream; 
-                guestVideo.addEventListener('loadedmetadata', () => {
-                    guestVideo.play();
-                }) 
-                bigPri.appendChild(guestVideo);
-            });
-        },
-        function (err) {
-            console.log("Failed to get local stream", err);
-        }
-    );
-});
+//         call.on("stream", function (guestStream) {
+//             guestVideo.srcObject = guestStream;
+//             guestVideo.addEventListener('loadedmetadata' , () => {
+//                 guestVideo.play();
+//             })
+//             bigPri.appendChild(guestVideo);
+//         });
+//       },
+//       function (err) {
+//         console.log("Failed to get local stream", err);
+//       }
+//     );
+// });
+// let callStream;
+myPeer.on('call', call => {
+    console.log("second" + localStream);
+    if (localStream) {
+        console.log("localstream works");
+        call.answer(myStream); // Answer the call with an A/V stream.
+
+        call.on("stream", function (guestStream) {
+            guestVideo.srcObject = guestStream;
+            guestVideo.addEventListener('loadedmetadata', () => {
+                guestVideo.play();
+            })
+            bigPri.appendChild(guestVideo);
+        });
+    }
+    else {
+        console.log("localstream not works");
+        getUserMedia(
+            { video: true, audio: true },
+            function (myStream) {
+                callStream = myStream;
+                call.answer(myStream); // Answer the call with an A/V stream.
+
+                call.on("stream", function (guestStream) {
+                    guestVideo.srcObject = guestStream;
+                    guestVideo.addEventListener('loadedmetadata', () => {
+                        guestVideo.play();
+                    })
+                    bigPri.appendChild(guestVideo);
+                });
+            },
+            function (err) {
+                console.log("Failed to get local stream", err);
+            }
+        );
+    }
+})
 
 
 
@@ -140,16 +181,14 @@ function leaveMeetting() {
 }
 
 function playStopVideo() {
-    if (localStream) {
-        let enabled = localStream.getVideoTracks()[0].enabled;
-        const playstopvideo = document.getElementById('playstopvideo');
-        if (enabled) {
-            localStream.getVideoTracks()[0].enabled = false;
-            setPlayVideo(playstopvideo);
-        } else {
-            setStopVideo(playstopvideo);
-            localStream.getVideoTracks()[0].enabled = true;
-        }
+    let enabled = localStream.getVideoTracks()[0].enabled;
+    const playstopvideo = document.getElementById('playstopvideo');
+    if (enabled) {
+        localStream.getVideoTracks()[0].enabled = false;
+        setPlayVideo(playstopvideo);
+    } else {
+        setStopVideo(playstopvideo);
+        localStream.getVideoTracks()[0].enabled = true;
     }
     if (callStream) {
         let enabled2 = callStream.getVideoTracks()[0].enabled;
@@ -165,18 +204,15 @@ function playStopVideo() {
 }
 
 function muteUnmute() {
-    if (localStream) {
-        const enabled = localStream.getAudioTracks()[0].enabled;
-        const muteunmute = document.getElementById('muteunmute');
-        if (enabled) {
-            localStream.getAudioTracks()[0].enabled = false;
-            setUnmuteButton(muteunmute);
-        } else {
-            setMuteButton(muteunmute);
-            localStream.getAudioTracks()[0].enabled = true;
-        }
+    const enabled = localStream.getAudioTracks()[0].enabled;
+    const muteunmute = document.getElementById('muteunmute');
+    if (enabled) {
+        localStream.getAudioTracks()[0].enabled = false;
+        setUnmuteButton(muteunmute);
+    } else {
+        setMuteButton(muteunmute);
+        localStream.getAudioTracks()[0].enabled = true;
     }
-
     if (callStream) {
         let enabled2 = callStream.getAudioTracks()[0].enabled;
         if (enabled2) {
@@ -242,3 +278,7 @@ function userLeaveMessage(name) {
     const addNewUser = document.getElementById('addNewUser');
     addNewUser.style.display = 'flex';
 }
+
+setInterval(()=>{
+    console.log(localStream);
+},1000);
