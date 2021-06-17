@@ -3,7 +3,7 @@ const socket = io('/');
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',
-    port: '443',
+    port: '8080',
 })
 
 
@@ -39,7 +39,6 @@ function closeInviteBox() {
 
 
 const allUsers = {};
-
 let localStream;
 let callStream;
 
@@ -96,6 +95,8 @@ navigator.mediaDevices.getUserMedia({
     })
 
 
+}).catch((err)=>{
+    console.log("Can't able to access camara" , err);
 })
 
 
@@ -133,57 +134,40 @@ socket.on('guestJoindMessage', name => {
 // });
 // let callStream;
 myPeer.on('call', call => {
+    console.log("second" + localStream);
+    if (localStream) {
+        console.log("localstream works");
+        call.answer(myStream); // Answer the call with an A/V stream.
 
-    var id = setInterval(() => {
-        if (localStream) {
-            console.log("localstream works");
-            call.answer(localStream); // Answer the call with an A/V stream.
+        call.on("stream", function (guestStream) {
+            guestVideo.srcObject = guestStream;
+            guestVideo.addEventListener('loadedmetadata', () => {
+                guestVideo.play();
+            })
+            bigPri.appendChild(guestVideo);
+        });
+    }
+    else {
+        console.log("localstream not works");
+        getUserMedia(
+            { video: true, audio: true },
+            function (myStream) {
+                callStream = myStream;
+                call.answer(myStream); // Answer the call with an A/V stream.
 
-            call.on("stream", function (guestStream) {
-                guestVideo.srcObject = guestStream;
-                guestVideo.addEventListener('loadedmetadata', () => {
-                    guestVideo.play();
-                })
-                bigPri.appendChild(guestVideo);
-            });
-            clearInterval(id);
-        }
-    }, 100);
-
-    // console.log("second" + localStream);
-    // if (localStream) {
-    //     console.log("localstream works");
-    //     call.answer(myStream); // Answer the call with an A/V stream.
-
-    //     call.on("stream", function (guestStream) {
-    //         guestVideo.srcObject = guestStream;
-    //         guestVideo.addEventListener('loadedmetadata', () => {
-    //             guestVideo.play();
-    //         })
-    //         bigPri.appendChild(guestVideo);
-    //     });
-    // }
-    // else {
-    //     console.log("localstream not works");
-    //     getUserMedia(
-    //         { video: true, audio: true },
-    //         function (myStream) {
-    //             callStream = myStream;
-    //             call.answer(myStream); // Answer the call with an A/V stream.
-
-    //             call.on("stream", function (guestStream) {
-    //                 guestVideo.srcObject = guestStream;
-    //                 guestVideo.addEventListener('loadedmetadata', () => {
-    //                     guestVideo.play();
-    //                 })
-    //                 bigPri.appendChild(guestVideo);
-    //             });
-    //         },
-    //         function (err) {
-    //             console.log("Failed to get local stream", err);
-    //         }
-    //     );
-    // }
+                call.on("stream", function (guestStream) {
+                    guestVideo.srcObject = guestStream;
+                    guestVideo.addEventListener('loadedmetadata', () => {
+                        guestVideo.play();
+                    })
+                    bigPri.appendChild(guestVideo);
+                });
+            },
+            function (err) {
+                console.log("Failed to get local stream", err);
+            }
+        );
+    }
 })
 
 
@@ -295,4 +279,3 @@ function userLeaveMessage(name) {
     const addNewUser = document.getElementById('addNewUser');
     addNewUser.style.display = 'flex';
 }
-
