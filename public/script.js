@@ -61,7 +61,7 @@ var getUserMedia =
 //Access user's camara and microphone
 navigator.mediaDevices.getUserMedia({
     video: true,
-    audio: true,
+    audio: false,
 }).then(myStream => {
 
     localStream = myStream;
@@ -158,7 +158,7 @@ myPeer.on('call', call => {
     else {
         console.log("localstream not works");
         getUserMedia(
-            { video: true, audio: true },
+            { video: true, audio: false },
             function (myStream) {
                 callStream = myStream;
                 call.answer(myStream); // Answer the call with an A/V stream.
@@ -212,27 +212,27 @@ function playStopVideo() {
 
 }
 
-function muteUnmute() {
-    const enabled = localStream.getAudioTracks()[0].enabled;
-    const muteunmute = document.getElementById('muteunmute');
-    if (enabled) {
-        localStream.getAudioTracks()[0].enabled = false;
-        setUnmuteButton(muteunmute);
-    } else {
-        setMuteButton(muteunmute);
-        localStream.getAudioTracks()[0].enabled = true;
-    }
-    if (callStream) {
-        let enabled2 = callStream.getAudioTracks()[0].enabled;
-        if (enabled2) {
-            callStream.getAudioTracks()[0].enabled = false;
-            setUnmuteButton(muteunmute);
-        } else {
-            setMuteButton(muteunmute);
-            callStream.getAudioTracks()[0].enabled = true;
-        }
-    }
-}
+// function muteUnmute() {
+//     const enabled = localStream.getAudioTracks()[0].enabled;
+//     const muteunmute = document.getElementById('muteunmute');
+//     if (enabled) {
+//         localStream.getAudioTracks()[0].enabled = false;
+//         setUnmuteButton(muteunmute);
+//     } else {
+//         setMuteButton(muteunmute);
+//         localStream.getAudioTracks()[0].enabled = true;
+//     }
+//     if (callStream) {
+//         let enabled2 = callStream.getAudioTracks()[0].enabled;
+//         if (enabled2) {
+//             callStream.getAudioTracks()[0].enabled = false;
+//             setUnmuteButton(muteunmute);
+//         } else {
+//             setMuteButton(muteunmute);
+//             callStream.getAudioTracks()[0].enabled = true;
+//         }
+//     }
+// }
 
 function setUnmuteButton(div) {
     div.innerHTML = '<i class="fas fa-microphone-slash"></i>';
