@@ -78,7 +78,7 @@ navigator.mediaDevices.getUserMedia({
         // guestVideo.setAttribute('id', 'big');
 
         call.on('stream', guestStream => {
-            // console.log("Outgoiing calls rosponse" ,guestStream);
+            console.log("Outgoiing calls rosponse" ,guestStream);
             guestVideo.srcObject = guestStream;
             guestVideo.addEventListener('loadedmetadata', () => {
                 guestVideo.play();
@@ -134,12 +134,14 @@ socket.on('guestJoindMessage', name => {
 // });
 // let callStream;
 myPeer.on('call', call => {
+    console.log("Incomming calls" , call);
     console.log("second" + localStream);
     if (localStream) {
         console.log("localstream works");
         call.answer(myStream); // Answer the call with an A/V stream.
 
         call.on("stream", function (guestStream) {
+            console.log("Incomming calls rosponse" ,guestStream);
             guestVideo.srcObject = guestStream;
             guestVideo.addEventListener('loadedmetadata', () => {
                 guestVideo.play();
